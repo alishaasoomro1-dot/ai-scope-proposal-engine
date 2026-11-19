@@ -1,7 +1,13 @@
 import { SYSTEM } from "@/lib/prompts";
 
-const API_KEY = process.env.GROQ_API_KEY;
-const MODEL = process.env.GROQ_MODEL || "llama-3.1-8b-instant";
+const PROVIDER = process.env.GROQ_API_KEY ? "groq" : process.env.OPENROUTER_API_KEY ? "openrouter" : null;
+const API_KEY = PROVIDER === "groq" ? process.env.GROQ_API_KEY : process.env.OPENROUTER_API_KEY;
+const MODEL = PROVIDER === "groq"
+  ? process.env.GROQ_MODEL || "llama-3.1-8b-instant"
+  : process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
+const API_URL = PROVIDER === "openrouter"
+  ? "https://openrouter.ai/api/v1/chat/completions"
+  : "https://api.groq.com/openai/v1/chat/completions";
 const TIMEOUT_MS = Math.min(Math.max(Number(process.env.AI_TIMEOUT_MS) || 45_000, 5_000), 120_000);
 const MAX_ATTEMPTS = Math.min(Math.max(Number(process.env.AI_MAX_ATTEMPTS) || 3, 1), 4);
 
@@ -22,7 +28,7 @@ export async function generate(prompt: string): Promise<string> {
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
     let response: Response;
     try {
-      response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${API_KEY}` },
         body: JSON.stringify({

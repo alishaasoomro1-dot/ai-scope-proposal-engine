@@ -1,23 +1,118 @@
 # AI Freelance Scope & Proposal Engine
 
-Next.js 16 (App Router) + TypeScript + Tailwind v4 + PostgreSQL (Drizzle ORM) + Groq.
+A modern AI-powered freelancing platform built with Next.js 16, TypeScript, Tailwind CSS 4, PostgreSQL, Drizzle ORM, and Groq AI.
+
+## Tech Stack
+
+- Next.js 16 (App Router)
+- TypeScript
+- Tailwind CSS 4
+- PostgreSQL
+- Drizzle ORM
+- Groq AI
 
 ## Setup
-1. `docker compose up -d` (or use your own PostgreSQL 14+)
-2. `cp .env.example .env` and set `DATABASE_URL`, `AUTH_SECRET`, `GROQ_API_KEY`
-3. `npm install`
-4. `npm run db:push` (creates tables)
-5. `npm run db:seed` (optional demo data)
-6. `npm run dev` then open http://localhost:3000
 
-Seed logins (password `Password123!`): `admin@example.com`, `freelancer@example.com`, `client@example.com`.
-AI analysis is stored per user and reused by proposal and scope generation when the job inputs match. Set `AI_TIMEOUT_MS` and `AI_MAX_ATTEMPTS` to tune provider reliability. AI tools require a valid `GROQ_API_KEY`.
+1. Start PostgreSQL:
 
-## Structure
-- `src/app` pages and the `api/ai/[kind]` route · `src/actions` server actions · `src/db` schema, connection, seed
-- `src/lib/prompts.ts` all AI prompts (edit here) · `src/lib/ai.ts` OpenRouter client · `src/proxy.ts` route gate
+```bash
+docker compose up -d
+```
+
+Or use any PostgreSQL 14+ database.
+
+2. Copy the environment file:
+
+```bash
+cp .env.example .env
+```
+
+3. Configure the following variables inside `.env`:
+
+- DATABASE_URL
+- AUTH_SECRET
+- GROQ_API_KEY
+
+4. Install dependencies:
+
+```bash
+npm install
+```
+
+5. Create database tables:
+
+```bash
+npm run db:push
+```
+
+6. (Optional) Seed demo data:
+
+```bash
+npm run db:seed
+```
+
+7. Start the development server:
+
+```bash
+npm run dev
+```
+
+8. Open:
+
+```
+http://localhost:3000
+```
+
+## Demo Accounts
+
+Password for all accounts:
+
+```
+Password123!
+```
+
+| Role | Email |
+|------|-------|
+| Admin | admin@example.com |
+| Freelancer | freelancer@example.com |
+| Client | client@example.com |
+
+## AI Features
+
+- AI Job Analysis
+- AI Proposal Generation
+- AI Scope Generation
+- Analysis reuse for matching jobs
+- Configurable timeout and retry settings
+
+Required environment variables:
+
+- GROQ_API_KEY
+- OPENROUTER_API_KEY
+- AI_TIMEOUT_MS
+- AI_MAX_ATTEMPTS
+
+## Project Structure
+
+```text
+src/
+├── app/                 # Pages and API routes
+├── actions/             # Server Actions
+├── db/                  # Database schema and seed files
+├── lib/
+│   ├── ai.ts            # Groq AI client
+│   └── prompts.ts       # AI prompts
+└── proxy.ts             # Dashboard route protection
+```
 
 ## Notes
-- Roles: freelancer, client, admin. Make an admin by running the seed, or change a role in the admin panel.
-- Profile photo is a URL field (no file upload storage is included).
-- Contracts are modeled as accepted proposals: accepting one moves the job to "in progress".
+
+- Supported roles:
+  - Admin
+  - Freelancer
+  - Client
+
+- Profile photos use image URLs.
+- File upload storage is not included.
+- Accepted proposals become contracts.
+- Accepted contracts are marked as `in_progress`.
